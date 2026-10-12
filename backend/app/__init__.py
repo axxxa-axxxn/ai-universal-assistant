@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 
-# Load environment variables from backend/.env
+# Load environment variables from backend/.env locally.
 load_dotenv()
 
 db = SQLAlchemy()
@@ -63,25 +63,32 @@ def create_app():
         os.path.join(os.path.dirname(__file__), "..")
     )
 
-    app.config["UPLOAD_FOLDER"] = os.path.join(
-        base_dir,
-        "uploads"
-    )
+    # Vercel's deployed application directory is read-only.
+    # /tmp is writable but temporary.
+    if os.getenv("VERCEL") == "1":
+        upload_folder = "/tmp/uploads"
+    else:
+        upload_folder = os.path.join(base_dir, "uploads")
 
-    os.makedirs(
-        app.config["UPLOAD_FOLDER"],
-        exist_ok=True
-    )
+    app.config["UPLOAD_FOLDER"] = upload_folder
+
+    os.makedirs(upload_folder, exist_ok=True)
 
     # CORS configuration
+    frontend_url = os.getenv(
+        "FRONTEND_URL",
+        "http://localhost:5173"
+    )
+
     CORS(
         app,
         resources={
             r"/api/*": {
-                "origins": os.getenv(
-                    "FRONTEND_URL",
-                    "http://localhost:5173"
-                )
+                "origins": [
+                    origin.strip()
+                    for origin in frontend_url.split(",")
+                    if origin.strip()
+                ]
             }
         },
         supports_credentials=True
