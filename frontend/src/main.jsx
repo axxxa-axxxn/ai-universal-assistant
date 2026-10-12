@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 
-const API = "http://127.0.0.1:5000/api";
+const API = "https://ai-universal-assistant-kekn.vercel.app/api";
 
 async function api(path, options = {}) {
   const token = localStorage.getItem("token");
@@ -147,3 +147,4 @@ function Root(){
   return <App user={user} logout={()=>{localStorage.removeItem("token");setUser(null)}}/>;
 }
 createRoot(document.getElementById("root")).render(<Root/>);
+
