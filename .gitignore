@@ -15,3 +15,13 @@ __pycache__
 *.pyc
 backend/uploads
 
+# Local SQLite databases
+backend/instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment and secret files
+.env
+.env.*
+!.env.example
